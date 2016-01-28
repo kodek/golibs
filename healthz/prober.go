@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/golang/glog"
 )
@@ -11,7 +12,10 @@ import (
 // Checks the host's healthz page at:
 // http://host/healthz
 func IsAlive(host string) bool {
-	resp, err := http.Get(fmt.Sprintf("http://%s/healthz", host))
+	client := http.Client{
+		Timeout: time.Duration(1 * time.Second),
+	}
+	resp, err := client.Get(fmt.Sprintf("http://%s/healthz", host))
 	if err != nil {
 		glog.Info("healthz connection failed: ", err)
 		return false
